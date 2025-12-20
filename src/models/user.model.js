@@ -25,11 +25,11 @@ const userSchema = new Schema(
             trim : true,
             index: true
         },
-        avatar :{
+        avatar:{
             type : String,  //cloudnary url
             required : true
         },
-        avatar :{
+        coverImage:{
             type : String   //cloudnary url
         },
         WatchHistory:[
@@ -51,10 +51,9 @@ const userSchema = new Schema(
     }
 )
 
-userSchema.pre("save", async function (next){
+userSchema.pre("save", async function (){
     if(!this.isModified("password")) return next();
-    this.password = bcrypt.hash(this.password, 10)
-    next()
+    this.password = await bcrypt.hash(this.password, 10)
 })
 
 userSchema.methods.isPassowdCorrect = async function (password){
