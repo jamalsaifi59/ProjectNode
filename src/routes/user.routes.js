@@ -1,5 +1,16 @@
 import { Router } from "express";
-import { loginUser, logOutUser, registerUser, refreshAccessToken, changeCurrentPassord, getCurrentUser, updateAccountDetails, updateUserAvatar, getUserChannelProfile, getWatchHistory} from "../controllers/user.controller.js";
+import {
+    loginUser,
+    logOutUser,
+    registerUser,
+    refreshAccessToken,
+    changeCurrentPassword,
+    getCurrentUser,
+    updateAccountDetails,
+    updateUserAvatar,
+    getUserChannelProfile,
+    getWatchHistory
+} from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
@@ -8,11 +19,11 @@ const router = Router()
 router.route("/register").post(
     upload.fields([
         {
-            name:"avatar",
+            name: "avatar",
             maxCount: 1
         },
         {
-            name:"coverImage",
+            name: "coverImage",
             maxCount: 1
         }
     ]),
@@ -20,12 +31,12 @@ router.route("/register").post(
 router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJWT, logOutUser);
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(verifyJWT,changeCurrentPassord)
-router.route("/current-user").get(verifyJWT,getCurrentUser)
-router.route("/update-account").patch(verifyJWT,updateAccountDetails)
+router.route("/change-password").post(verifyJWT, changeCurrentPassword)
+router.route("/current-user").get(verifyJWT, getCurrentUser)
+router.route("/update-account").patch(verifyJWT, updateAccountDetails)
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateUserAvatar)
 router.route("/cover-image").patch(verifyJWT, upload.single("coverImage"), updateUserAvatar)
-router.route("/channel/:username").get(verifyJWT,getUserChannelProfile)
-router.route("/history").get(verifyJWT,getWatchHistory)
+router.route("/channel/:username").get(verifyJWT, getUserChannelProfile)
+router.route("/history").get(verifyJWT, getWatchHistory)
 
 export default router
