@@ -11,3 +11,5 @@ router.route("/video/:videoId").get(verifyJWT, getVideoComments)
 router.route("/video/:videoId").post(verifyJWT, createComment)
 router.route("/video/:videoId").put(verifyJWT, updateComment)
 router.route("/video/:videoId").delete(verifyJWT, deleteComment)
+
+export default router;
