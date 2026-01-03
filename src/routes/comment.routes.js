@@ -7,9 +7,9 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
-router.route("/video/:videoId").get(verifyJWT, getVideoComments)
-router.route("/video/:videoId").post(verifyJWT, createComment)
-router.route("/video/:videoId").put(verifyJWT, updateComment)
-router.route("/video/:videoId").delete(verifyJWT, deleteComment)
+router.route("/video-comment").get(verifyJWT, getVideoComments)
+router.route("/create-comment").post(verifyJWT, createComment)
+router.route("/update-comment/:commentId").put(verifyJWT, updateComment)
+router.route("/delete-comment/:commentId").delete(verifyJWT, deleteComment)
 
 export default router;

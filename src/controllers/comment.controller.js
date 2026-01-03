@@ -63,21 +63,10 @@ const getVideoComments = asyncHandler (async (req, res) =>{
 
 const createComment = asyncHandler (async (req,res)=>{
     const { content } = req.body;
-    const { videoId } = req.params;
     const { _id: owner } = req.user;
-
-    if(!videoId || !isValidObjectId(videoId)){
-        throw new ApiError (400, "Invalid videoId");
-    }
-
-    const video = await video.findById(videoId);
-    if(!video){
-        throw new ApiError (404, "video not found")
-    }
 
     const comment = await Comment.create({
         content,
-        video: video._id,
         owner
     })
 
