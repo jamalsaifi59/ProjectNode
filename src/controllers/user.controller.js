@@ -205,7 +205,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const changeCurrentPassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body
-    const user = await User.findById(req.user?._id)
+    if (!oldPassword){
+        throw new ApiError (400, "Old Password is required")
+    }
+    if (!newPassword){
+        throw new ApiError (400, "New Password is required")
+    }
+    const user = await User.findById(req.user?._id).select("+password")
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
@@ -217,33 +223,92 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     return res.status(200)
         .json(new ApiResponse(200, {}, "Old Password is change"))
-})
+});
+
+// const forggetPasssword = asyncHandler(async (req, res) => {
+//     const { email, password } = req.body
+//     if (!email) {
+//         throw new ApiError(400, "Email is required")
+//     }
+
+//     const user = await User.findOne(
+//         {
+//             email: email.trim().toLowerCase()
+//         },
+//         { new: true }
+//     ).select("+password")
+
+//     if (!user) {
+//         throw new ApiError(404, "User does not exist with this email")
+//     }
+
+//     const resetToken = user.generateResetPasswordToken(password)
+//     if (!resetToken) {
+//         throw new ApiError(500, "Something went wrong while generating reset token")
+//     }
+
+//     const newPassword = jwt.verify(
+//         resetToken,
+//         process.env.RESET_PASSWORD_TOKEN_SECRET
+//     )
+//     if (!newPassword) {
+//         throw new ApiError(400, "invalid or expires reset token")
+//     }
+
+//     user.password = password
+//     await user.save({ validateBeforeSave: false })
+
+//     const userWithNewpassword = await User.findByIdAndUpdate(
+//         user._id,
+//         {
+//             $set: {
+//                 password: password
+//             }
+//         },
+//         {
+//             validateBeforeSave: false
+//         },
+//         { new: true }
+//     )
+
+//     if (!userWithNewpassword) {
+//         throw new ApiError(500, "something went wrong while updating new password")
+//     }
+
+//     return res.status(200)
+//         .json(new ApiResponse(200, {}, "Old Password is change"))
+
+// })
+
 
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res.status(200)
-        .json(200, req.user, "Current User Fetched Succesfully")
+        .json(200, req.User, "Current User Fetched Succesfully")
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
-    const { fullname, email } = req.body
+    const { fullname, email } = req.body || {}
+
     if (!fullname || !email) {
         throw new ApiError(400, "All Field are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
                 fullname,
-                email: email
+                email
             }
         },
         { new: true }
     ).select("-password")
 
-    return res.status(200)
-        .json(new ApiResponse(200, user, "Account Details Updated Successfully"))
+    return res.status(200).json(
+        new ApiResponse(200, user, "Account Details Updated Successfully")
+    )
 })
+
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
     const avatarLocalPath = req.file?.path
@@ -440,5 +505,6 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
-    getWatchHistory
+    getWatchHistory,
+    // forggetPasssword,
 }
